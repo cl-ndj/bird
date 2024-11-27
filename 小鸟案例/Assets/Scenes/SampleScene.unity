@@ -2325,7 +2325,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upforce: 250
   downforce: 100
-  slowforce: 200
+  slowforce: 180
   death: 0
 --- !u!1 &1830181249
 GameObject:
