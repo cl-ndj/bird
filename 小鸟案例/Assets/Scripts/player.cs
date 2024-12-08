@@ -6,10 +6,11 @@ using UnityEngine.Events;
 public class player : MonoBehaviour
 {
     private new Rigidbody2D rigidbody2D;
-    public float upforce = 100;
-    public float downforce = 4;
-    public float slowforce = 100;
+    public float speed = 5;
+    public GameObject zidan;
+    public float fireRate = 10;
 
+ 
     private Animator animator;
     public bool death = false;
     public delegate void deathNotify();
@@ -36,34 +37,32 @@ public class player : MonoBehaviour
     {
         if (this.death)
             return;
-        isShift = Input.GetKey(KeyCode.LeftShift);
+        Vector2 pos = this.transform.position;
+        pos.x += Input.GetAxis("Horizontal")*Time.deltaTime*speed;
+        pos.y += Input.GetAxis("Vertical")*Time.deltaTime*speed;
+        this.transform.position = pos;
 
-        if (Input.GetMouseButtonDown(0))
+        fireTimer += Time.deltaTime;
+        if (Input.GetButton("Fire1"))
         {
-            if (isShift)
-            {
-                rigidbody2D.velocity = Vector2.zero;
-                rigidbody2D.AddForce(new Vector2(0, slowforce), ForceMode2D.Force);
-            }
-            else
-            {
-                rigidbody2D.velocity = Vector2.zero;
-                rigidbody2D.AddForce(new Vector2(0, upforce), ForceMode2D.Force);
-            }
-            
-            
-        }
-         if (Input.GetMouseButtonDown(1))
-        {
-            Flydown();
-            rigidbody2D.velocity = Vector2.zero;
-            rigidbody2D.AddForce(new Vector2(0, -downforce), ForceMode2D.Force);
-        }
-       
+          
+            Fire();
 
+        }
+    }
+    float fireTimer = 0;
+   
+    private void Fire()
+    {
+        if (fireTimer > 1 / fireRate)
+        {
+            GameObject zd = Instantiate(zidan);
+            zd.transform.position = this.transform.position;
+            fireTimer = 0f;
+        }
+        
 
     }
-
     public void Init()
     {
         transform.position = initps;
@@ -90,14 +89,29 @@ public class player : MonoBehaviour
         animator.SetTrigger("flydown");
     }
 
-    public void OnCollisionEnter2D(Collision2D collision)
+    private void Die()
     {
-      
         this.death = true;
-        if (OnDeth!=null)
+        if (OnDeth != null)
         {
             OnDeth();
         }
+    }
+
+    public void OnCollisionEnter2D(Collision2D collision)
+    {
+
+        //Die();
+       
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.name == "scoreArea")
+        {
+
+        }
+        // else
+       //  Die();
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
